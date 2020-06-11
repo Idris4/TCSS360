@@ -101,12 +101,21 @@ public class Room implements Serializable{
 		 */
 		public static Room loadRoom(String roomName) {
 			try {
+				
+				if(SAVE_FILE.createNewFile()) {
+					System.out.println(SAVE_FILE.toString() +" Creation Successful");
+					Room firstRoom = new Room("Your First Room");
+					saveRoom(firstRoom);
+				}
+				 
 				FileInputStream inFile = new FileInputStream(SAVE_FILE);
-				ObjectInputStream reader = new ObjectInputStream(inFile);
+				ObjectInputStream reader = new ObjectInputStream(inFile);	
+				
 				Room myRoom = (Room) reader.readObject();
 				reader.close();
 				inFile.close();
 				return myRoom;
+				
 			}
 			catch(IOException e) {
 				e.printStackTrace();
@@ -134,6 +143,18 @@ public class Room implements Serializable{
 				}
 			}
 			return null;
+		}
+		
+		public HomeFile findFile(HomeFile file) {
+			for(Room r : mySubRooms) {
+				for(HomeFile f : r.getFiles()) {
+					if(file.equals(f)) {
+						return f;
+					}
+				}
+			}
+			return null;
+			
 		}
 		
 		/**
@@ -215,6 +236,30 @@ public class Room implements Serializable{
 		public boolean equals(Room other) {
 			
 			return myRoomName.equals(other.getRoomName());
+		}
+		
+		/**
+		 * Method for printing the structure of a room, mainly for dev use.
+		 * @author Romi Tshiorny
+		 */
+		public void printRoom() {
+			System.out.println(myRoomName +":");
+			for(Room r : mySubRooms) {
+				System.out.println(myRoomName +"->" + r.getRoomName() + ":");
+				r.printRoom();
+			}
+			for(HomeFile f: myFiles) {
+				System.out.println(myRoomName +"->" + f.getName());
+			}
+		}
+		
+		/**
+		 * Method for renaming a room
+		 * @author Romi Tshiorny
+		 * @param theName new name
+		 */
+		public void rename(String theName) {
+			myRoomName = theName;
 		}
 		
 }
